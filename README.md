@@ -6,6 +6,8 @@ VRChat World Script Decompiler.
 
 # BE AWARE
 
+before decompile, you need disassemble it, here is [UdonSharpDisassembler](https://github.com/extremeblackliu/UdonSharpDisassembler)
+
 this is my first time writing of decompiler and it does have big logic issue,
 the decompiler can only decompile Single-Layered logic branch, 
 for example:
