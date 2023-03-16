@@ -1,6 +1,14 @@
 #pragma once
 #include "Global.h"
 
+/*
+
+	- AssemblyLoader
+
+	Load Disassembled assembly 
+
+*/
+
 namespace AssemblyLoader
 {
 	void Split(std::vector<std::string> &out, std::string orig, std::string delimiter)

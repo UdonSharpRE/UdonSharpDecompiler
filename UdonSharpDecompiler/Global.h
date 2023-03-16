@@ -108,6 +108,8 @@ void AddLogNoNewLine(const char* sLog, ...)
 	va_end(va);
 }
 
+
+// Layered Code Format(Not Implement)
 namespace Result
 {
 	int m_iLayer = 0;
