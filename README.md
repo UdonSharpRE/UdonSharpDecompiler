@@ -1,4 +1,4 @@
-[中文](https://github.com/extremeblackliu/UdonSharpDecompiler/)
+[中文](https://github.com/extremeblackliu/UdonSharpDecompiler/blob/master/README.md)
 
 # UdonSharpDecompiler
 
