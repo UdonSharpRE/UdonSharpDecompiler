@@ -4,6 +4,8 @@
 
 # 注意
 
+在你反编译之前，你需要先反汇编，[反汇编器](https://github.com/extremeblackliu/UdonSharpDisassembler)
+
 这是我第一次编写反编译器，它存在很大的逻辑上的问题，它只能反编译单层的逻辑，例如：
 
 ```CS
