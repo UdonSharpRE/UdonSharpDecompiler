@@ -76,4 +76,40 @@ void Func_0()
 ```
 the output maybe wrong due to no information of those functions.
 
+you can try set line 73 (m_bRequiredThisPtr) to true in Globals.h to get different output:
+```CS
+Loaded Functions: 1
+Loaded Symbols:
+Address: 0x0000000000000002 | Symbol: toggleObjects
+Address: 0x0000000000000003 | Symbol: __0_toggleObject_GameObject
+Address: 0x0000000000000004 | Symbol: __1_const_intnl_SystemInt32
+Address: 0x0000000000000005 | Symbol: __0_const_intnl_SystemInt32
+Address: 0x0000000000000008 | Symbol: __0_const_intnl_SystemUInt32
+Address: 0x0000000000000009 | Symbol: __2_intnl_SystemBoolean
+Address: 0x000000000000000A | Symbol: __1_intnl_SystemBoolean
+Address: 0x000000000000000B | Symbol: __0_intnl_SystemBoolean
+Address: 0x000000000000000C | Symbol: __1_intnl_SystemInt32
+Address: 0x000000000000000D | Symbol: __0_intnl_SystemInt32
+Address: 0x000000000000000E | Symbol: __0_intnl_returnTarget_UInt32
+
+
+void Func_0()
+{
+        __0_intnl_SystemInt32 = 0;
+        __1_intnl_SystemInt32 = toggleObjects.get_Length();
+        while(true)
+        {
+        __0_intnl_SystemBoolean = __0_intnl_SystemInt32 < __1_intnl_SystemInt32;
+        if(__0_intnl_SystemBoolean)
+                break;
+        __0_toggleObject_GameObject = toggleObjects.Get(__0_intnl_SystemInt32);
+        __1_intnl_SystemBoolean = __0_toggleObject_GameObject.get_activeSelf();
+        __2_intnl_SystemBoolean = __1_intnl_SystemBoolean;
+        __0_toggleObject_GameObject.SetActive(__2_intnl_SystemBoolean);
+        __0_intnl_SystemInt32 = __0_intnl_SystemInt32 + 1;
+        }
+        __0_intnl_returnTarget_UInt32 = __0_toggleObject_GameObject;
+}
+```
+
 im not longer touch this project, i decided to public this.
