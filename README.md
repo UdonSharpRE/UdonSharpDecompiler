@@ -8,7 +8,7 @@ VRChat World Script Decompiler.
 
 before decompile, you need disassemble it, here is [UdonSharpDisassembler](https://github.com/extremeblackliu/UdonSharpDisassembler)
 
-this is my first time writing of decompiler and it does have big logic issue,
+this is my first time writing a decompiler and it has a big logic issue. also, i dont know how a decompiler works, so i came up with my own idea by analyzing the disassembled string and stepping through the opcode.
 the decompiler can only decompile Single-Layered logic branch, 
 for example:
 
