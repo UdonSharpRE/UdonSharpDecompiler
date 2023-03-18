@@ -12,7 +12,8 @@ int main(int argc, char** argv)
 	AssemblyLoader::Load("D:\\Mirror", "D:\\bin_Mirror", "D:\\const_Mirror");
 
 	AddLog("\n");
-
+	
+	// the array is the function which one you wanna decompile they are ordered same as disassembled output
 	Decompiler::Decompiler(Global::m_vFunctions[0]);
 
 	Result::PrintAll();
