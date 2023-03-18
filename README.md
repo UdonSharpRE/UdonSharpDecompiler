@@ -99,14 +99,14 @@ void Func_0()
         __1_intnl_SystemInt32 = toggleObjects.get_Length();
         while(true)
         {
-        __0_intnl_SystemBoolean = __0_intnl_SystemInt32 < __1_intnl_SystemInt32;
-        if(__0_intnl_SystemBoolean)
-                break;
-        __0_toggleObject_GameObject = toggleObjects.Get(__0_intnl_SystemInt32);
-        __1_intnl_SystemBoolean = __0_toggleObject_GameObject.get_activeSelf();
-        __2_intnl_SystemBoolean = __1_intnl_SystemBoolean;
-        __0_toggleObject_GameObject.SetActive(__2_intnl_SystemBoolean);
-        __0_intnl_SystemInt32 = __0_intnl_SystemInt32 + 1;
+            __0_intnl_SystemBoolean = __0_intnl_SystemInt32 < __1_intnl_SystemInt32;
+            if(__0_intnl_SystemBoolean)
+                    break;
+            __0_toggleObject_GameObject = toggleObjects.Get(__0_intnl_SystemInt32);
+            __1_intnl_SystemBoolean = __0_toggleObject_GameObject.get_activeSelf();
+            __2_intnl_SystemBoolean = __1_intnl_SystemBoolean;
+            __0_toggleObject_GameObject.SetActive(__2_intnl_SystemBoolean);
+            __0_intnl_SystemInt32 = __0_intnl_SystemInt32 + 1;
         }
         __0_intnl_returnTarget_UInt32 = __0_toggleObject_GameObject;
 }
