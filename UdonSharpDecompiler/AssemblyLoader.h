@@ -182,12 +182,25 @@ namespace AssemblyLoader
 		{
 			m_sLine = m_vLines[i];
 
-			std::vector<std::string> ConstSplit;
-			Split(ConstSplit, m_sLine, " ");
-			if (ConstSplit.size() > 1)
+			// const is string
+			if (m_sLine.find("\"") != std::string::npos)
 			{
-				int m_iAddress = std::stoi(ConstSplit[0], nullptr, 16);
-				Global::m_pConstVariables[m_iAddress] = ConstSplit[1];
+				std::vector<std::string> ConstSplit;
+				Split(ConstSplit, m_sLine, "\"");
+				if (ConstSplit.size() > 1)
+				{
+					int m_iAddress = std::stoi(ConstSplit[0], nullptr, 16);
+					Global::m_pConstVariables[m_iAddress] = std::string("\"") + ConstSplit[1] + std::string("\"");
+				}
+			}
+			else {
+				std::vector<std::string> ConstSplit;
+				Split(ConstSplit, m_sLine, " ");
+				if (ConstSplit.size() > 1)
+				{
+					int m_iAddress = std::stoi(ConstSplit[0], nullptr, 16);
+					Global::m_pConstVariables[m_iAddress] = ConstSplit[1];
+				}
 			}
 		}
 	}

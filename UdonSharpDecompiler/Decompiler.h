@@ -4,216 +4,34 @@
 namespace Decompiler
 {
 	std::vector<int> m_vStack;
+	std::vector<int> m_vLabels;
+	std::vector<LineInfo> m_vLineInfo;
 
-	OPCODE IsAnyJumpToHere(Function UFunction, int iAddress, LineData& pOutLineData)
+	void MarkLine(int iAddress)
 	{
-		bool m_bSkipNext = false;
-
-		int m_iAddress = UFunction.iStartAddress;
-
-		unsigned int* Code = (unsigned int*)&UFunction.vBytes[0];
-
-		for (int i = 0; i < UFunction.vBytes.size() / 4; i++)
-		{
-			if (m_bSkipNext)
-			{
-				m_bSkipNext = false;
-				continue;
-			}
-
-			int opcode = _byteswap_ulong(Code[i]);
-			switch (opcode)
-			{
-			case COPY:
-			case POP:
-			{
-				m_iAddress += 4;
-			}
-			break;
-			case EXTERN:
-			case ANNOTATION:
-			case PUSH:
-			{
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JNE:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-				if (Address == iAddress)
-				{
-					pOutLineData.m_iAddress = m_iAddress;
-					pOutLineData.m_iOpcode = JNE;
-					pOutLineData.m_iOperateDataAddress = Address;
-					return JNE;
-				}
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JMP:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-				
-				if (Address == iAddress)
-				{
-					pOutLineData.m_iAddress = m_iAddress;
-					pOutLineData.m_iOpcode = JMP;
-					pOutLineData.m_iOperateDataAddress = Address;
-					return JMP;
-				}
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JUMP_INDIRECT:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-				
-				// should be ignored
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			}
-		}
-		return NOP;
+		LineInfo pLine;
+		pLine.m_iAddress = iAddress;
+		pLine.m_iLineOrder = Result::iCount;
+		m_vLineInfo.push_back(pLine);
 	}
 
-	int FindBreakStatement(Function UFunction, int iStartAddress, int iEndAddress, int& iJneOutAddr)
+	void MarkLabel(int iAddress)
 	{
-		bool m_bSkipNext = false;
-
-		int m_iAddress = iStartAddress;
-
-		unsigned int* Code = (unsigned int*)&UFunction.vBytes[iStartAddress];
-
-		for (int i = 0; i < (iEndAddress - iStartAddress) / 4; i++)
+		for (int b = 0; b < m_vLabels.size(); b++)
 		{
-			if (m_bSkipNext)
+			if (m_vLabels[b] == iAddress)
 			{
-				m_bSkipNext = false;
-				continue;
-			}
-
-			int opcode = _byteswap_ulong(Code[i]);
-			switch (opcode)
-			{
-			case COPY:
-			case POP:
-			{
-				m_iAddress += 4;
-			}
-			break;
-			case EXTERN:
-			case ANNOTATION:
-			case PUSH:
-			{
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JNE:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-				if (Address > iEndAddress)
-				{
-					iJneOutAddr = Address;
-					return m_iAddress;
-				}
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JMP:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JUMP_INDIRECT:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-				// TODO
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
+				m_vLabels[b] = iAddress; // if its getting multiple address keep latest one
+				return;
 			}
 		}
-		return 0;
+		m_vLabels.push_back(iAddress);
 	}
 
-	bool FindElse(Function UFunction, int iStartAddress, int iEndAddress, int& ElseEndAddress)
+	void MarkLabelInLine(int iLine, int iAddress)
 	{
-		bool m_bSkipNext = false;
-
-		int m_iAddress = iStartAddress;
-
-		unsigned int* Code = (unsigned int*)&UFunction.vBytes[iStartAddress];
-
-		for (int i = 0; i < (iEndAddress - iStartAddress) / 4; i++)
-		{
-			if (m_bSkipNext)
-			{
-				m_bSkipNext = false;
-				continue;
-			}
-
-			int opcode = _byteswap_ulong(Code[i]);
-			switch (opcode)
-			{
-			case COPY:
-			case POP:
-			{
-				m_iAddress += 4;
-			}
-			break;
-			case EXTERN:
-			case ANNOTATION:
-			case PUSH:
-			case JNE:
-			{
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JMP:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-				ElseEndAddress = Address;
-				return true;
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			case JUMP_INDIRECT:
-			{
-				int Address = _byteswap_ulong(Code[i + 1]);
-
-
-				return true;
-				
-				m_iAddress += 8;
-				m_bSkipNext = true;
-			}
-			break;
-			}
-		}
-		return 0;
+		Result::m_sDecompiled.insert(Result::m_sDecompiled.begin() + iLine, std::string("LABEL_") + std::to_string(iAddress) + std::string(":\n"));
+		Result::iCount++;
 	}
 
 	template<typename T>
@@ -224,16 +42,26 @@ namespace Decompiler
 		return Vec[Vec.size() - 1];
 	}
 
-	void Decompiler(Function UFunction)
+	void DecompilerRange(Function UFunction, int iStartAddress, int iEndAddress, bool bStub = false)
 	{
 		bool m_bSkipNext = false;
 
-		int m_iAddress = UFunction.iStartAddress;
+		//iStartAddress += 8;
+		int m_iAddress = iStartAddress;
 
 		unsigned int* Code = (unsigned int*)&UFunction.vBytes[0];
+		if (!bStub)
+		{
+			// there is always push xxxxx as start of function its pointless
+			//iStartAddress += 8;
+			// there is always push xxxxx copy  jmp xxx as end of function its pointless
+			//iEndAddress -= 20;
+			Result::AddLog("void Func_%X()", UFunction.iStartAddress + 8);
+			Result::AddLog("{");
+		}
+		else {
 
-		Result::AddLog("void Func_%d()", UFunction.iStartAddress);
-		Result::AddLog("{");
+		}
 
 		bool m_iIndentation = false;
 
@@ -243,79 +71,25 @@ namespace Decompiler
 		std::vector<bool> m_bFoundLoop;
 		std::vector<ControlFlowLoopData> m_pControlFlowLoopData;
 
-		std::vector<bool> m_bCurrentIfhasElse;
-		std::vector<int> m_iElseEndAddress;
-
-
-		for (int i = 0; i < UFunction.vBytes.size() / 4; i++)
+		for (int i = (bStub ? iStartAddress / 4 : iStartAddress); i <= iEndAddress / 4; i++)
 		{
 			if (m_bSkipNext)
 			{
 				m_bSkipNext = false;
 				continue;
 			}
-			
-			LineData m_pPreWalkData;
-			switch (IsAnyJumpToHere(UFunction, m_iAddress, m_pPreWalkData))
+			//debug
+			//Result::AddLog("%X", m_iAddress);
+			for (int b = 0; b < m_vLabels.size(); b++)
 			{
-			case JMP:
-				
-				// there is jmp back at bottom to the current address
-				if (m_iAddress < m_pPreWalkData.m_iAddress)
+				if (m_vLabels[b] == m_iAddress)
 				{
-					m_bFoundLoop.push_back(true);
-
-					ControlFlowLoopData m_pTemp;
-					m_pTemp.m_iStartAddress = m_iAddress;
-					m_pTemp.m_iEndAddress = m_pPreWalkData.m_iAddress;
-
-					// Pre-Walk tho opcodes for finding breakstatement, it gonna find always correct address since logic is like that
-					m_pTemp.m_iBreakOpcodeAddress = FindBreakStatement(UFunction, m_iAddress, m_pPreWalkData.m_iAddress, m_pTemp.m_iOutAddress);
-
-					m_pControlFlowLoopData.push_back(m_pTemp);
-
-					Result::AddLog("\twhile(true)");
-					Result::AddLog("\t{");
-
-					m_iIndentation = true;
+					m_vLabels.erase(m_vLabels.begin() + b);
+					Result::AddLog("LABEL_%d:", m_iAddress);
 				}
-				else {
-					if (GetLastVector(m_bCurrentIfhasElse) && m_iAddress == GetLastVector(m_iElseEndAddress))
-					{
-						Result::AddLog("\t}");
-						m_bCurrentIfhasElse.pop_back();
-					}
-					else{
-						Result::AddLog("LABEL_%d:", m_iAddress);
-					}
-				}
-
-				break;
-			case JNE:
-				if (GetLastVector(m_bFoundLoop) && m_iAddress == GetLastVector(m_pControlFlowLoopData).m_iOutAddress)
-				{
-					Result::AddLog("\t}");
-					m_bFoundLoop.pop_back();
-				
-					m_pControlFlowLoopData.pop_back();
-				}
-				else {
-					if (GetLastVector(m_bCurrentIfhasElse))
-					{
-						Result::AddLog("\t}");
-						Result::AddLog("\telse");
-						Result::AddLog("\t{");
-					}
-					else {
-						Result::AddLog("\t}");
-					}
-				}
-				m_iIndentation = false;
-				break;
 			}
-
 			/*
-			
+
 			if (m_iIndentation)
 			{
 				Result::AddLogNoNewLine("\t");
@@ -356,34 +130,45 @@ namespace Decompiler
 
 				int Address = _byteswap_ulong(Code[i + 1]);
 
-				if (GetLastVector(m_bFoundLoop) && m_iAddress == GetLastVector(m_pControlFlowLoopData).m_iBreakOpcodeAddress)
-				{
-					Result::AddLog("\tif(%s)", m_sSymbol.c_str());
-					Result::AddLog("\t\tbreak;");
-				}
-				else {
-					int m_iElseAddrTemp = 0;
-					bool m_bTempCurrentIfhasElse = FindElse(UFunction, m_iAddress - UFunction.iStartAddress, Address - UFunction.iStartAddress, m_iElseAddrTemp);
+				MarkLabel(Address);
 
-					m_bCurrentIfhasElse.push_back(m_bTempCurrentIfhasElse);
-					m_iElseEndAddress.push_back(m_iElseAddrTemp);
+				MarkLine(m_iAddress);
+				Result::AddLog("\tif(%s)", m_sSymbol.c_str());
+				Result::AddLog("\t{");
+				
+				//Result::m_iIndentationTimes++;
+				DecompilerRange(UFunction, m_iAddress + 8, Address, true);
+				//Result::m_iIndentationTimes--;
+				
+				Result::AddLog("\t}");
+				Result::AddLog("\telse {");
+				Result::AddLog("\t\tgoto LABEL_%d;", Address);
+				Result::AddLog("\t}");
+				//Result::AddLog("\treturn;");
+				//Result::AddLog("\tLABEL_%d", Address);
 
-					Result::AddLog("\tif(%s)", m_sSymbol.c_str());
-					Result::AddLog("\t{");
-					m_iIndentation = true;
-				}
-
-				m_iAddress += 8;
-				m_bSkipNext = true;
+				i = (Address - 4) / 4;
+				m_iAddress = (Address);
+				MarkLine(m_iAddress);
+				//m_bSkipNext = true;
 			}
 			break;
 			case JMP:
 			{
 				int Address = _byteswap_ulong(Code[i + 1]);
-
-				if (!GetLastVector(m_bFoundLoop) && !GetLastVector(m_bCurrentIfhasElse))
+				
+				MarkLine(m_iAddress);
+				Result::AddLog("\tgoto LABEL_%d;", Address);
+				MarkLabel(Address);
+				if (Address < m_iAddress) // jumping to back??
 				{
-					Result::AddLog("\tgoto LABEL_%d;", Address);
+					for (auto& LineInfo : m_vLineInfo)
+					{
+						if (LineInfo.m_iAddress == Address)
+						{
+							MarkLabelInLine(LineInfo.m_iLineOrder, LineInfo.m_iAddress);
+						}
+					}
 				}
 
 				m_iAddress += 8;
@@ -393,17 +178,19 @@ namespace Decompiler
 			case EXTERN:
 			{
 				int Address = _byteswap_ulong(Code[i + 1]);
-			
+
 				ExternInfo m_pExternInfo = Utils::GetExtern(m_iAddress, Address);
-				
+
 				std::string sOperator;
 				bool bIsOperator = Utils::ResolveOperator(m_pExternInfo, sOperator);;
+
+				MarkLine(m_iAddress);
 
 				std::string Method = m_pExternInfo.m_sExternName;
 				if (m_pExternInfo.m_bRequiredThisPtr)
 				{
 					int ThisPtr = m_vStack[m_vStack.size() - 1 - m_pExternInfo.m_iArgCount - (m_pExternInfo.m_bHasReturnValue ? 1 : 0)];
-					
+
 					std::string m_sSymbol = Utils::GetSymbolFromAddress(ThisPtr);
 					if (m_sSymbol.find("_const_") != std::string::npos)
 					{
@@ -412,19 +199,19 @@ namespace Decompiler
 
 					Method = m_sSymbol + "." + m_pExternInfo.m_sFunctionName;
 				}
-				
+
 				if (m_pExternInfo.m_bHasReturnValue)
 				{
 					int ReturnValue = m_vStack[m_vStack.size() - 1];
 					m_vStack.pop_back();
 
 					std::string m_sSymbol = Utils::GetSymbolFromAddress(ReturnValue);
-					
+
 					if (m_pExternInfo.m_bRequiredThisPtr)
 					{
 						Result::AddLogNoNewLine("\t%s = %s(", m_sSymbol.c_str(), Method.c_str());
 					}
-					else if(bIsOperator)
+					else if (bIsOperator)
 					{
 						Result::AddLogNoNewLine("\t%s = ", m_sSymbol.c_str());
 					}
@@ -435,7 +222,7 @@ namespace Decompiler
 				else {
 					Result::AddLogNoNewLine("\t%s(", Method.c_str());
 				}
-				
+
 				std::vector<std::string> m_vTempStackReverse;
 				for (int i = 0; i < m_pExternInfo.m_iArgCount; i++)
 				{
@@ -469,7 +256,7 @@ namespace Decompiler
 					}
 				}
 
-				
+
 				if (!bIsOperator)
 				{
 					Result::AddLog(");");
@@ -478,6 +265,7 @@ namespace Decompiler
 					Result::AddLog(";");
 				}
 				m_iAddress += 8;
+				MarkLine(m_iAddress);
 				m_bSkipNext = true;
 			}
 			break;
@@ -497,6 +285,8 @@ namespace Decompiler
 			break;
 			case COPY:
 			{
+				MarkLine(m_iAddress);
+
 				int Dest = m_vStack[m_vStack.size() - 1];
 				m_vStack.pop_back();
 
@@ -505,7 +295,7 @@ namespace Decompiler
 
 				std::string m_sDest = Utils::GetSymbolFromAddress(Dest);
 				std::string m_sSrc = Utils::GetSymbolFromAddress(Source);
-				
+
 				if (m_sDest.find("_const_") != std::string::npos)
 				{
 					m_sDest = Utils::GetConstVariableFromAddress(Dest, m_sDest);
@@ -518,6 +308,7 @@ namespace Decompiler
 				Result::AddLog("\t%s = %s;", m_sDest.c_str(), m_sSrc.c_str());
 
 				m_iAddress += 4;
+				MarkLine(m_iAddress);
 			}
 			break;
 			}
@@ -535,8 +326,15 @@ namespace Decompiler
 				m_iLastOpcodeType.push_back(opcode);
 				*/
 			}
+			
 		}
-		Result::AddLog("}");
+		if(!bStub)
+			Result::AddLog("}");
+	}
+
+	void Decompiler(Function UFunction)
+	{
+		DecompilerRange(UFunction, 0, UFunction.vBytes.size());
 	}
 
 

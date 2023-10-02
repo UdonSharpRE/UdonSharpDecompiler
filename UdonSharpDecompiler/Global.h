@@ -82,6 +82,11 @@ struct ExternInfo
 	std::string m_sFunctionName;
 };
 
+struct LineInfo {
+	int m_iAddress;
+	int m_iLineOrder;
+};
+
 
 void AddLog(const char* sLog, ...)
 {
@@ -108,13 +113,14 @@ void AddLogNoNewLine(const char* sLog, ...)
 	va_end(va);
 }
 
+//#define PRE_PRINT_OUTPUT
 
-// Layered Code Format(Not Implement)
 namespace Result
 {
-	int m_iLayer = 0;
+	int m_iIndentationTimes = 0;
 
 	std::vector<std::string> m_sDecompiled;
+	int iCount = 0;
 	
 	void AddLog(const char* sLog, ...)
 	{
@@ -127,14 +133,18 @@ namespace Result
 		std::string s(buffer);
 
 		s.append("\n");
-
-		if (m_iLayer > 0)
+		for (int i = 0; i < m_iIndentationTimes; i++)
 		{
-			m_sDecompiled.insert(m_sDecompiled.begin() + m_sDecompiled.size() - m_iLayer, s);
+			s = std::string("  ") + s;
 		}
-		else {
-			m_sDecompiled.push_back(s);
-		}
+		m_sDecompiled.push_back(s);
+		iCount++;
+#ifdef PRE_PRINT_OUTPUT
+
+		printf(s.c_str());
+		
+#endif
+
 		va_end(va);
 	}
 
@@ -146,23 +156,15 @@ namespace Result
 		char buffer[1024];
 		vsprintf(buffer, sLog, va);
 
-		if (m_iLayer > 0)
-		{
-			m_sDecompiled.insert(m_sDecompiled.begin() + m_sDecompiled.size() - m_iLayer, buffer);
-		}
-		else {
-			m_sDecompiled.push_back(buffer);
-		}
-		va_end(va);
-	}
+		m_sDecompiled.push_back(buffer);
+		iCount++;
+#ifdef PRE_PRINT_OUTPUT
 
-	void AddBracketsMode()
-	{
-		m_iLayer++;;
-	}
-	void DecBracketsMode()
-	{
-		m_iLayer--;
+		printf(buffer);
+
+#endif
+
+		va_end(va);
 	}
 
 	void PrintAll()
