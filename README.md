@@ -17,40 +17,31 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-public class Logic : UdonSharpBehaviour
-{
-    void Update()
-    {
-        float dt = Time.deltaTime;
-		if(dt > 0.0f)
-		{
-			if(dt > 3.0f)
-			{
-				Debug.Log("low fps!!!");
-			}
-		}
-		else{
-			Debug.Log("can this happening??");
-			if(dt > 2.0f)
-			{
-				Debug.Log("also for this??");
-			}
-		}
-		
-		for(int i = 0 ; i < 100; i++)
-		{
-			Debug.Log("now spamming you");
-		}
-		
-		int x = 500;
-		while(x > 0)
-		{
-			Debug.Log("while now spamming you");
-			x--;
-		}
-	}
-}
+public class Logic: UdonSharpBehaviour {
+  void Update() {
+    float dt = Time.deltaTime;
+    if (dt > 0.0 f) {
+      if (dt > 3.0 f) {
+        Debug.Log("low fps!!!");
+      }
+    } else {
+      Debug.Log("can this happening??");
+      if (dt > 2.0 f) {
+        Debug.Log("also for this??");
+      }
+    }
 
+    for (int i = 0; i < 100; i++) {
+      Debug.Log("now spamming you");
+    }
+
+    int x = 500;
+    while (x > 0) {
+      Debug.Log("while now spamming you");
+      x--;
+    }
+  }
+}
 ```
 
 Decompiled:
