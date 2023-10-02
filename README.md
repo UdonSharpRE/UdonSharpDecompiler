@@ -8,108 +8,175 @@ VRChat World Script Decompiler.
 
 before decompile, you need disassemble it, here is [UdonSharpDisassembler](https://github.com/extremeblackliu/UdonSharpDisassembler)
 
-this is my first time writing a decompiler and it has a big logic issue. also, i dont know how a decompiler works, so i came up with my own idea by analyzing the disassembled string and stepping through the opcode.
-the decompiler can only decompile Single-Layered logic branch, 
 for example:
 
+Original Code:
 ```CS
-// this function has only 1 Layer branch, so the Decompiler will works fine
-void TestFunc()
+using UdonSharp;
+using UnityEngine;
+using VRC.SDKBase;
+using VRC.Udon;
+
+public class Logic : UdonSharpBehaviour
 {
-    bool IsBigger = 5 > 3;
-    if(IsBigger)
+    void Update()
     {
-        Debug.Log("yea 5 is bigger than 3");
-    }
+        float dt = Time.deltaTime;
+		if(dt > 0.0f)
+		{
+			if(dt > 3.0f)
+			{
+				Debug.Log("low fps!!!");
+			}
+		}
+		else{
+			Debug.Log("can this happening??");
+			if(dt > 2.0f)
+			{
+				Debug.Log("also for this??");
+			}
+		}
+		
+		for(int i = 0 ; i < 100; i++)
+		{
+			Debug.Log("now spamming you");
+		}
+		
+		int x = 500;
+		while(x > 0)
+		{
+			Debug.Log("while now spamming you");
+			x--;
+		}
+	}
 }
 
-
-// this function has MORE-THAN-1 Layer branch, so the Decompiler will broken
-void TestFunc1()
-{
-    bool IsBigger = 5 > 3;
-    if(IsBigger)
-    {
-        Debug.Log("yea 5 is greater than 3");
-        if(4 < 5)
-        {
-            Debug.Log("you shouldnt see this because 4 is smaller than 5");
-        }
-    }
-}
 ```
 
-# Example Output
+Decompiled:
 ```CS
 Loaded Functions: 1
 Loaded Symbols:
-Address: 0x0000000000000002 | Symbol: toggleObjects
-Address: 0x0000000000000003 | Symbol: __0_toggleObject_GameObject
-Address: 0x0000000000000004 | Symbol: __1_const_intnl_SystemInt32
-Address: 0x0000000000000005 | Symbol: __0_const_intnl_SystemInt32
-Address: 0x0000000000000008 | Symbol: __0_const_intnl_SystemUInt32
-Address: 0x0000000000000009 | Symbol: __2_intnl_SystemBoolean
-Address: 0x000000000000000A | Symbol: __1_intnl_SystemBoolean
-Address: 0x000000000000000B | Symbol: __0_intnl_SystemBoolean
-Address: 0x000000000000000C | Symbol: __1_intnl_SystemInt32
-Address: 0x000000000000000D | Symbol: __0_intnl_SystemInt32
-Address: 0x000000000000000E | Symbol: __0_intnl_returnTarget_UInt32
-
-
-void Func_0()
+Address: 0x0000000000000002 | Symbol: __0_i_Int32
+Address: 0x0000000000000003 | Symbol: __0_x_Int32
+Address: 0x0000000000000004 | Symbol: __0_dt_Single
+Address: 0x0000000000000005 | Symbol: __3_const_intnl_SystemInt32
+Address: 0x0000000000000006 | Symbol: __2_const_intnl_SystemInt32
+Address: 0x0000000000000007 | Symbol: __1_const_intnl_SystemInt32
+Address: 0x0000000000000008 | Symbol: __0_const_intnl_SystemInt32
+Address: 0x0000000000000009 | Symbol: __2_const_intnl_SystemSingle
+Address: 0x000000000000000A | Symbol: __1_const_intnl_SystemSingle
+Address: 0x000000000000000B | Symbol: __0_const_intnl_SystemSingle
+Address: 0x000000000000000C | Symbol: __4_const_intnl_SystemString
+Address: 0x000000000000000D | Symbol: __3_const_intnl_SystemString
+Address: 0x000000000000000E | Symbol: __2_const_intnl_SystemString
+Address: 0x000000000000000F | Symbol: __1_const_intnl_SystemString
+Address: 0x0000000000000010 | Symbol: __0_const_intnl_SystemString
+Address: 0x0000000000000011 | Symbol: __0_const_intnl_SystemUInt32
+Address: 0x0000000000000012 | Symbol: __1_intnl_SystemBoolean
+Address: 0x0000000000000013 | Symbol: __0_intnl_SystemBoolean
+Address: 0x0000000000000014 | Symbol: __0_intnl_SystemInt32
+Address: 0x0000000000000015 | Symbol: __0_intnl_returnTarget_UInt32
+void Func_8()
 {
-        __0_intnl_SystemInt32 = 0;
-        __1_intnl_SystemInt32 = UnityEngineGameObjectArray.get_Length();
-        while(true)
+        __0_dt_Single = UnityEngineTime.get_deltaTime();
+        __0_intnl_SystemBoolean = __0_dt_Single > 0;
+        if(__0_intnl_SystemBoolean)
         {
-            __0_intnl_SystemBoolean = __0_intnl_SystemInt32 < __1_intnl_SystemInt32;
-            if(__0_intnl_SystemBoolean)
-                    break;
-            __0_toggleObject_GameObject = SystemObjectArray.Get(__0_intnl_SystemInt32);
-            __1_intnl_SystemBoolean = UnityEngineGameObject.get_activeSelf();
-            __2_intnl_SystemBoolean = __1_intnl_SystemBoolean;
-            UnityEngineGameObject.SetActive(__2_intnl_SystemBoolean);
-            __0_intnl_SystemInt32 = __0_intnl_SystemInt32 + 1;
+			__1_intnl_SystemBoolean = __0_dt_Single > 3;
+			if(__1_intnl_SystemBoolean)
+			{
+				UnityEngineDebug.Log("low fps!!!");
+LABEL_136:
+				goto LABEL_224;
+			}
+			else {
+				goto LABEL_136;
+			}
+			goto LABEL_224;
+LABEL_144:
         }
-        __0_intnl_returnTarget_UInt32 = __0_toggleObject_GameObject;
+        else {
+            goto LABEL_144;
+        }
+        UnityEngineDebug.Log("can this happening??");
+        __1_intnl_SystemBoolean = __0_dt_Single > 2;
+        if(__1_intnl_SystemBoolean)
+        {
+			UnityEngineDebug.Log("also for this??");
+LABEL_224:
+        }
+        else {
+            goto LABEL_224;
+        }
+        __0_i_Int32 = 0;
+LABEL_244:
+        __1_intnl_SystemBoolean = __0_i_Int32 < 100;
+        if(__1_intnl_SystemBoolean)
+        {
+			UnityEngineDebug.Log("now spamming you");
+			__0_intnl_SystemInt32 = __0_i_Int32;
+			__0_i_Int32 = __0_intnl_SystemInt32 + 1;
+			goto LABEL_244;
+LABEL_368:
+        }
+        else {
+            goto LABEL_368;
+        }
+        __0_x_Int32 = 500;
+LABEL_388:
+        __1_intnl_SystemBoolean = __0_x_Int32 > 0;
+        if(__1_intnl_SystemBoolean)
+        {
+			UnityEngineDebug.Log("while now spamming you");
+			__0_intnl_SystemInt32 = __0_x_Int32;
+			__0_x_Int32 = __0_intnl_SystemInt32 - 1;
+			goto LABEL_388;
+LABEL_512:
+        }
+        else {
+                goto LABEL_512;
+        }
+        __0_intnl_returnTarget_UInt32 = __0_intnl_returnTarget_UInt32;
 }
 ```
-the output maybe wrong due to no information of those functions.
+the output maybe wrong due to no information of Game functions.
 
-you can try set line 73 (m_bRequiredThisPtr) to true in Globals.h to get different output:
+Simplified by AI(maybe wrong but its pretty much readable):
 ```CS
-Loaded Functions: 1
-Loaded Symbols:
-Address: 0x0000000000000002 | Symbol: toggleObjects
-Address: 0x0000000000000003 | Symbol: __0_toggleObject_GameObject
-Address: 0x0000000000000004 | Symbol: __1_const_intnl_SystemInt32
-Address: 0x0000000000000005 | Symbol: __0_const_intnl_SystemInt32
-Address: 0x0000000000000008 | Symbol: __0_const_intnl_SystemUInt32
-Address: 0x0000000000000009 | Symbol: __2_intnl_SystemBoolean
-Address: 0x000000000000000A | Symbol: __1_intnl_SystemBoolean
-Address: 0x000000000000000B | Symbol: __0_intnl_SystemBoolean
-Address: 0x000000000000000C | Symbol: __1_intnl_SystemInt32
-Address: 0x000000000000000D | Symbol: __0_intnl_SystemInt32
-Address: 0x000000000000000E | Symbol: __0_intnl_returnTarget_UInt32
-
-
-void Func_0()
+void Func_8()
 {
-        __0_intnl_SystemInt32 = 0;
-        __1_intnl_SystemInt32 = toggleObjects.get_Length();
-        while(true)
+    float deltaTime = UnityEngine.Time.deltaTime;
+    
+    if (deltaTime > 0)
+    {
+        if (deltaTime > 3)
         {
-            __0_intnl_SystemBoolean = __0_intnl_SystemInt32 < __1_intnl_SystemInt32;
-            if(__0_intnl_SystemBoolean)
-                    break;
-            __0_toggleObject_GameObject = toggleObjects.Get(__0_intnl_SystemInt32);
-            __1_intnl_SystemBoolean = __0_toggleObject_GameObject.get_activeSelf();
-            __2_intnl_SystemBoolean = __1_intnl_SystemBoolean;
-            __0_toggleObject_GameObject.SetActive(__2_intnl_SystemBoolean);
-            __0_intnl_SystemInt32 = __0_intnl_SystemInt32 + 1;
+            UnityEngine.Debug.Log("low fps!!!");
         }
-        __0_intnl_returnTarget_UInt32 = __0_toggleObject_GameObject;
+        
+        UnityEngine.Debug.Log("can this happening??");
+        
+        if (deltaTime > 2)
+        {
+            UnityEngine.Debug.Log("also for this??");
+        }
+        
+        for (int i = 0; i < 100; i++)
+        {
+            UnityEngine.Debug.Log("now spamming you");
+        }
+        
+        int x = 500;
+        
+        while (x > 0)
+        {
+            UnityEngine.Debug.Log("while now spamming you");
+            x--;
+        }
+    }
 }
 ```
+it was simplified by https://codepal.ai/code-simplifier (not ad)
 
-im not longer touch this project, i decided to public this.
+you can try set line 73 (m_bRequiredThisPtr) to true in Globals.h to get different output
