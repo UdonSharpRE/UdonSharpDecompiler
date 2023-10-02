@@ -71,7 +71,7 @@ namespace Decompiler
 		std::vector<bool> m_bFoundLoop;
 		std::vector<ControlFlowLoopData> m_pControlFlowLoopData;
 
-		for (int i = (bStub ? iStartAddress / 4 : iStartAddress); i <= iEndAddress / 4; i++)
+		for (int i = (bStub ? (iStartAddress - UFunction.iStartAddress) / 4 : 0); i <= (iEndAddress - UFunction.iStartAddress) / 4; i++)
 		{
 			if (m_bSkipNext)
 			{
@@ -147,8 +147,8 @@ namespace Decompiler
 				//Result::AddLog("\treturn;");
 				//Result::AddLog("\tLABEL_%d", Address);
 
-				i = (Address - 4) / 4;
-				m_iAddress = (Address);
+				i += (Address - m_iAddress) / 4;
+				m_iAddress = Address + 8;
 				MarkLine(m_iAddress);
 				//m_bSkipNext = true;
 			}
@@ -158,7 +158,9 @@ namespace Decompiler
 				int Address = _byteswap_ulong(Code[i + 1]);
 				
 				MarkLine(m_iAddress);
+				
 				Result::AddLog("\tgoto LABEL_%d;", Address);
+				
 				MarkLabel(Address);
 				if (Address < m_iAddress) // jumping to back??
 				{
@@ -334,7 +336,7 @@ namespace Decompiler
 
 	void Decompiler(Function UFunction)
 	{
-		DecompilerRange(UFunction, 0, UFunction.vBytes.size());
+		DecompilerRange(UFunction, UFunction.iStartAddress, UFunction.iStartAddress + UFunction.vBytes.size());
 	}
 
 

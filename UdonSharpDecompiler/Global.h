@@ -70,7 +70,7 @@ struct ExternInfo
 	bool m_bHasReturnValue = false;
 
 	// this was default 'true' but in the case not all functions need this pointer even tho its object oriented language
-	bool m_bRequiredThisPtr = false;
+	bool m_bRequiredThisPtr = true;
 	
 	bool m_bHasArgument = false;
 
@@ -277,5 +277,19 @@ namespace Utils
 			break;
 		}
 		return m_bFoundOperator;
+	}
+
+	bool InAnyFunctionScope(int iJmpAddress)
+	{
+		for (int i = 0; i < Global::m_vFunctions.size(); i++)
+		{
+			auto& pFunction = Global::m_vFunctions[i];
+			if (iJmpAddress > pFunction.iStartAddress && iJmpAddress < pFunction.iEndAddress)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
