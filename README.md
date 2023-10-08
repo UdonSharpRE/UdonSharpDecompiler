@@ -171,3 +171,6 @@ void Func_8()
 it was simplified by https://codepal.ai/code-simplifier (not ad)
 
 you can try set line 73 (m_bRequiredThisPtr) to true in Globals.h to get different output
+
+# TODO
+- optimize decompile output to make it generate more readable code.
