@@ -169,3 +169,6 @@ void Func_8()
 我使用了 https://codepal.ai/code-simplifier 来简化(不是广告)
 
 你可以更改 Globals.h 中的第 73 行的 (m_bRequiredThisPtr) 为 true 来获得略微不同的输出结果。
+
+# TODO
+- 优化反编译输出来生成更加可读的代码。
