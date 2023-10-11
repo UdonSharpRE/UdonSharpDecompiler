@@ -1,16 +1,18 @@
 [中文](https://github.com/extremeblackliu/UdonSharpDecompiler/blob/master/README_cn.md)
 
-# UdonSharpDecompiler
+# UdonSharpDecompiler V1.5
 
 VRChat World Script Decompiler.
+
+- v1.5 is inspired by [snowman](https://github.com/x64dbg/snowman)
 
 # BE AWARE
 
 before decompile, you need disassemble it, here is [UdonSharpDisassembler](https://github.com/extremeblackliu/UdonSharpDisassembler)
 
-for example:
+# Example Output
 
-Original Code:
+## Original Code
 ```CS
 using UdonSharp;
 using UnityEngine;
@@ -44,7 +46,7 @@ public class Logic: UdonSharpBehaviour {
 }
 ```
 
-Decompiled:
+## Decompiled:
 ```CS
 Loaded Functions: 1
 Loaded Symbols:
@@ -133,7 +135,8 @@ LABEL_512:
 ```
 the output maybe wrong due to no information of Game functions.
 
-Simplified by AI(maybe wrong but its pretty much readable):
+## Simplified by AI
+maybe wrong but its pretty much readable
 ```CS
 void Func_8()
 {
