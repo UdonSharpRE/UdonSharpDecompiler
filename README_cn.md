@@ -1,14 +1,16 @@
-# UdonSharp 反编译器
+# UdonSharp 反编译器 V1.5
 
 反编译VRChat地图中的脚本
+
+- v1.5版本是直接修改升级了1.0版本(之前的缺陷版本，无法反编译叠加的JNE逻辑)，v1.5版本受了 [snowman](https://github.com/x64dbg/snowman) 的启发
 
 # 注意
 
 在你反编译之前，你需要先反汇编，[反汇编器](https://github.com/extremeblackliu/UdonSharpDisassembler)
 
-示例输出:
+# 示例输出
 
-原始代码:
+## 原始代码
 ```CS
 using UdonSharp;
 using UnityEngine;
@@ -42,7 +44,7 @@ public class Logic: UdonSharpBehaviour {
 }
 ```
 
-反编译后:
+## 反编译后:
 ```CS
 Loaded Functions: 1
 Loaded Symbols:
@@ -131,7 +133,8 @@ LABEL_512:
 ```
 输出结果可能因为没有游戏函数的进一步信息而产生错误，这点将会在未来改进。
 
-使用AI简化代码之后(有可能是错的，但是已经非常可读了):
+## 使用AI简化代码之后
+有可能是错的，但是已经非常可读了
 ```CS
 void Func_8()
 {
